@@ -1,0 +1,16 @@
+{
+  "name": "angl-compiler",
+  "version": "0.0.0",
+  "description": "angl-to-Javascript compiler",
+  "main": "index.js",
+  "dependencies": {
+    "lodash": "~1.0.0-rc.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "MIT"
+}
