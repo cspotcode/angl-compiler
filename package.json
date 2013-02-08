@@ -4,7 +4,8 @@
   "description": "angl-to-Javascript compiler",
   "main": "index.js",
   "dependencies": {
-    "lodash": "~1.0.0-rc.3"
+    "lodash": "~1.0.0-rc.3",
+    "angl": "https://github.com/TazeTSchnitzel/angl/archive/master.tar.gz"
   },
   "devDependencies": {},
   "scripts": {
