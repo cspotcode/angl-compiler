@@ -45,3 +45,7 @@ body {
 #error {
   color: #f00;
 }
+.errors {
+  color: #f00;
+  font-weight: bold;
+}
