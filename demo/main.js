@@ -230,6 +230,19 @@ var generateStatement = function(astNode, omitTerminator, omitIndentation) {
             omitIndentation || printIndent()
             print('/* with(){} block has been omitted.  Not implemented yet.*/')
             break
+        case 'return':
+            // TODO is there ever a situation where a Javascript 'return' won't do what we want?
+            // For example, inside a _.each() iterator function
+            omitIndentation || printIndent()
+            print('return (')
+            generateExpression(astNode.expr)
+            print(')')
+            break
+        case 'exit':
+            // TODO same caveats as 'return'
+            omitIndentation || printIndent()
+            print('return')
+            break
         case 'nop':
             // No-ops don't do anything.  I'm assuming they never trigger any behavior by
             // "seperating" adjacent statements.
