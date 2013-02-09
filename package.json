@@ -5,7 +5,9 @@
   "main": "index.js",
   "dependencies": {
     "lodash": "~1.0.0-rc.3",
-    "angl": "https://github.com/TazeTSchnitzel/angl/archive/master.tar.gz"
+    "angl": "https://github.com/TazeTSchnitzel/angl/archive/master.tar.gz",
+    "jade": "~0.28.1",
+    "stylus": "~0.32.0"
   },
   "devDependencies": {},
   "scripts": {

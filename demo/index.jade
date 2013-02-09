@@ -1,0 +1,87 @@
+!!! html
+html
+    head
+        title Angl-to-Javascript compiler demo
+
+        link(rel="stylesheet", type="text/css", href="style.css")
+
+        // TODO include jQuery, knockout(?)
+        script(type="text/javascript", src="vendor/jquery-1.9.1.min.js")
+        script(type="text/javascript", src="vendor/knockout-2.2.1.min.js")
+        script(type="text/javascript", src="vendor/lodash.min.js")
+        script(type="text/javascript")
+            // stub out require() support
+            window.modules = {
+                'lodash': window._
+            }
+            window.require = function(module) {
+                var ret = modules[module]
+                if(!ret) throw new Error('unknown module ' + JSON.stringify(module))
+                return ret
+            }
+            window.module = {exports: {}}
+        script(type="text/javascript", src="vendor/parser.js")
+        script(type="text/javascript")
+            window.modules['./parser.js'] = module.exports
+            window.module = {exports: {}}
+        script(type="text/javascript", src="vendor/angl.js")
+        script(type="text/javascript")
+            modules['angl'] = module.exports
+            window.module = {exports: {}}
+        script(type="text/javascript", src="main.js")
+        script(type="text/javascript")
+            modules['compiler'] = module.exports
+            window.module = {exports: {}}
+        script(type="text/javascript")
+            $(document).ready(function($) {
+                var angl = require('angl')
+                var compiler = require('compiler')
+                var viewModel = window.viewModel = {}
+                ;(function() {
+                    this.view = ko.observable('js')
+                    this.errors = ko.observable()
+                    this.ast = ko.observable()
+                    this.compiledJs = ko.observable()
+                    this.inputAngl = ko.observable('')
+
+                    var recompile = ko.computed(function() {
+                        try {
+                            this.ast(angl.parse(this.inputAngl()))
+                        } catch(e) {
+                            this.errors(e.message)
+                            return
+                        }
+                        try {
+                            this.compiledJs(compiler(this.ast()))
+                        } catch(e) {
+                            this.errors(e.message)
+                        }
+                        this.errors(undefined)
+                    }, this).extend({throttle: 500})
+                }).apply(viewModel)
+
+                ko.applyBindings(viewModel)
+            })
+
+    body
+        .left-column.container
+            textarea#input.fill-container(data-bind="value: inputAngl, valueUpdate: 'afterkeydown'")
+        .right-column.container
+            .top-row
+                input(type="radio", name="view", value="ast", data-bind="checked: view")
+                label AST
+                input(type="radio", name="view", value="js", data-bind="checked: view")
+                label Javascript
+
+            #output.fill-container.container
+                // ko if: errors()
+                pre#error.scroll-box(data-bind="text: errors")
+                // /ko
+                // ko if: view() == 'js' && !errors()
+                code#compiledCode.scroll-box
+                    pre(data-bind="text: compiledJs")
+                // /ko
+                // ko if: view() == 'ast' && !errors()
+                code#compiledCode.scroll-box
+                    pre(data-bind="text: JSON.stringify(ast(), null, '    ')")
+                // /ko
