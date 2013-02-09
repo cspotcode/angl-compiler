@@ -82,20 +82,21 @@ html
         .right-column.container
             .top-row
                 input(type="radio", name="view", value="ast", data-bind="checked: view")
-                label AST
+                label(data-bind="css: {errors: parserErrors}") AST
                 input(type="radio", name="view", value="js", data-bind="checked: view")
-                label Javascript
+                label(data-bind="css: {errors: compilerErrors}") Javascript
                 = " | "
                 a(href="javascript:void 0", data-bind="click: on_getPermalinkClicked") Get Permalink
 
             #output.fill-container.container
                 // ko if: view() == 'js'
-                // ko ifnot: compilerErrors
+                // ko if: !compilerErrors() && !parserErrors()
                 code#compiledCode.scroll-box
                     pre(data-bind="text: compiledJs")
                 // /ko
-                // ko if: compilerErrors
-                pre#error.scroll-box(data-bind="text: compilerErrors")
+                // ko if: compilerErrors() || parserErrors()
+                div.scroll-box
+                    pre#error(data-bind="text: compilerErrors() || parserErrors()")
                 // /ko
                 // /ko
                 // ko if: view() == 'ast'
@@ -104,6 +105,7 @@ html
                     pre(data-bind="text: JSON.stringify(ast(), null, '    ')")
                 // /ko
                 // ko if: parserErrors
-                pre#error.scroll-box(data-bind="text: parserErrors")
+                div.scroll-box
+                    pre#error(data-bind="text: parserErrors")
                 // /ko
                 // /ko
