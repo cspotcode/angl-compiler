@@ -55,6 +55,7 @@ html
                             this.compiledJs(compiler(this.ast()))
                         } catch(e) {
                             this.errors(e.message)
+                            return
                         }
                         this.errors(undefined)
                     }, this).extend({throttle: 500})
