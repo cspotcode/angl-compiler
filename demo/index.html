@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><title>Angl-to-Javascript compiler demo</title><link rel="stylesheet" type="text/css" href="style.css"><!-- TODO include jQuery, knockout(?)--><script type="text/javascript" src="vendor/jquery-1.9.1.min.js"></script><script type="text/javascript" src="vendor/knockout-2.2.1.min.js"></script><script type="text/javascript" src="vendor/lodash.min.js"></script><script type="text/javascript">// stub out require() support
+window.modules = {
+    'lodash': window._
+}
+window.require = function(module) {
+    var ret = modules[module]
+    if(!ret) throw new Error('unknown module ' + JSON.stringify(module))
+    return ret
+}
+window.module = {exports: {}}</script><script type="text/javascript" src="vendor/parser.js"></script><script type="text/javascript">window.modules['./parser.js'] = module.exports
+window.module = {exports: {}}</script><script type="text/javascript" src="vendor/angl.js"></script><script type="text/javascript">modules['angl'] = module.exports
+window.module = {exports: {}}</script><script type="text/javascript" src="main.js"></script><script type="text/javascript">modules['compiler'] = module.exports
+window.module = {exports: {}}</script><script type="text/javascript">$(document).ready(function($) {
+    var angl = require('angl')
+    var compiler = require('compiler')
+    var viewModel = window.viewModel = {}
+    ;(function() {
+        this.view = ko.observable('js')
+        this.errors = ko.observable()
+        this.ast = ko.observable()
+        this.compiledJs = ko.observable()
+        this.inputAngl = ko.observable('')
+        
+        var recompile = ko.computed(function() {
+            try {
+                this.ast(angl.parse(this.inputAngl()))
+            } catch(e) {
+                this.errors(e.message)
+                return
+            }
+            try {
+                this.compiledJs(compiler(this.ast()))
+            } catch(e) {
+                this.errors(e.message)
+            }
+            this.errors(undefined)
+        }, this).extend({throttle: 500})
+    }).apply(viewModel)
+    
+    ko.applyBindings(viewModel)
+})
+</script></head><body><div class="left-column container"><textarea id="input" data-bind="value: inputAngl, valueUpdate: 'afterkeydown'" class="fill-container"></textarea></div><div class="right-column container"><div class="top-row"><input type="radio" name="view" value="ast" data-bind="checked: view"><label>AST</label><input type="radio" name="view" value="js" data-bind="checked: view"><label>Javascript</label></div><div id="output" class="fill-container container"><!-- ko if: errors()--><pre id="error" data-bind="text: errors" class="scroll-box"></pre><!-- /ko--><!-- ko if: view() == 'js' && !errors()--><code id="compiledCode" class="scroll-box"><pre data-bind="text: compiledJs"></pre></code><!-- /ko--><!-- ko if: view() == 'ast' && !errors()--><code id="compiledCode" class="scroll-box"><pre data-bind="text: JSON.stringify(ast(), null, '    ')"></pre></code><!-- /ko--></div></div></body></html>
