@@ -82,11 +82,18 @@ var generateExpression = function(astNode) {
             // What about when the array isn't initialized or the target isn't an array?
             print('(')
             generateExpression(astNode.expr)
-            print(')[(')
+            print(')[')
             generateExpression(astNode.indexexpr1)
-            print('),(')
+            print('][')
             generateExpression(astNode.indexexpr2)
-            print(')]')
+            print(']')
+            break
+        case 'index1d':
+            print('(')
+            generateExpression(astNode.expr)
+            print(')[')
+            generateExpression(astNode.indexexpr)
+            print(']')
             break
         case 'funccall':
             print('(')
