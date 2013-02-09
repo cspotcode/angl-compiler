@@ -39,7 +39,8 @@ html
                 var viewModel = window.viewModel = {}
                 ;(function() {
                     this.view = ko.observable('js')
-                    this.errors = ko.observable()
+                    this.parserErrors = ko.observable()
+                    this.compilerErrors = ko.observable()
                     this.ast = ko.observable()
                     this.compiledJs = ko.observable()
                     this.inputAngl = ko.observable('')
@@ -48,16 +49,17 @@ html
                         try {
                             this.ast(angl.parse(this.inputAngl()))
                         } catch(e) {
-                            this.errors(e.message)
+                            this.parserErrors(e.message)
                             return
                         }
+                        this.parserErrors(undefined)
                         try {
                             this.compiledJs(compiler(this.ast()))
                         } catch(e) {
-                            this.errors(e.message)
+                            this.compilerErrors(e.message)
                             return
                         }
-                        this.errors(undefined)
+                        this.compilerErrors(undefined)
                     }, this).extend({throttle: 500})
                 }).apply(viewModel)
 
@@ -75,14 +77,21 @@ html
                 label Javascript
 
             #output.fill-container.container
-                // ko if: errors()
-                pre#error.scroll-box(data-bind="text: errors")
-                // /ko
-                // ko if: view() == 'js' && !errors()
+                // ko if: view() == 'js'
+                // ko ifnot: compilerErrors
                 code#compiledCode.scroll-box
                     pre(data-bind="text: compiledJs")
                 // /ko
-                // ko if: view() == 'ast' && !errors()
+                // ko if: compilerErrors
+                pre#error.scroll-box(data-bind="text: compilerErrors")
+                // /ko
+                // /ko
+                // ko if: view() == 'ast'
+                // ko ifnot: parserErrors
                 code#compiledCode.scroll-box
                     pre(data-bind="text: JSON.stringify(ast(), null, '    ')")
+                // /ko
+                // ko if: parserErrors
+                pre#error.scroll-box(data-bind="text: parserErrors")
+                // /ko
                 // /ko
