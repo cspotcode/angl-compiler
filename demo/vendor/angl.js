@@ -50,6 +50,14 @@ parser.yy = {
             stmts: stmts
         };
     },
+    // makes const definition structure
+    makeConstStmt: function (name, expr) {
+        return {
+            type: 'const',
+            name: name,
+            expr: expr
+        };
+    },
     // make binary operator structure
     makeBinaryOp: function (op, expr1, expr2) {
         return {
