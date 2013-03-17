@@ -29,7 +29,7 @@ _.each([
     copyFile(v, path.join('out', v));
 });
 
-copyFile('node_modules/lodash/lodash.min.js', 'out/demo/vendor/lodash.min.js');
+copyFile('node_modules/lodash/dist/lodash.min.js', 'out/demo/vendor/lodash.min.js');
 
 // copy angl AST-generator to demo
 writeFile('out/demo/vendor/angl.js', wrapForBrowser(readFile('node_modules/angl/out/angl.js')));
