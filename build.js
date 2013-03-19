@@ -20,21 +20,5 @@ stylus(input).render(function(err, output) {
     output.to('out/demo/style.css');
 });
 
-// copy third-party scripts
-cp('-f', 'demo/vendor/*', 'out/demo/vendor/');
-cp('-f', 'node_modules/lodash/dist/lodash.min.js', 'out/demo/vendor/lodash.min.js');
+require('./run-requirejs-optimizer');
 
-// copy angl AST-generator to demo
-wrapForBrowser(cat('node_modules/angl/out/angl.js')).to('out/demo/vendor/angl.js');
-wrapForBrowser(cat('node_modules/angl/out/parser.js')).to('out/demo/vendor/parser.js');
-
-// copy compiler to demo
-wrapForBrowser(cat('lib/main.js')).to('out/demo/main.js');
-
-////
-// UTILITY FUNCTIONS
-////
-
-function wrapForBrowser(input) {
-    return ';(function(module, exports){\n' + input + '\n})(window.module, window.module.exports);';
-}
