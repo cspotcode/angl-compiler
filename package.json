@@ -8,7 +8,9 @@
     "angl": "https://github.com/TazeTSchnitzel/angl/archive/master.tar.gz",
     "jade": "~0.28.1",
     "stylus": "~0.32.0",
-    "shelljs": "~0.1.2"
+    "shelljs": "~0.1.2",
+    "requirejs": "~2.1.5",
+    "almond": "~0.2.5"
   },
   "devDependencies": {},
   "scripts": {
