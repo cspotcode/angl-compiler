@@ -1,0 +1,88 @@
+// TODO object (with and without parent), property
+object Foo parent Bar {
+  a = 2;
+  script foo(baz) {}
+  create(a, x, y) {
+    super(x, y);
+  }
+  destroy {}
+}
+
+x = script(a, b, c) {
+  return 1;
+};
+script y(a, b, c) {
+  for(i = 0; i < 10; i++) {
+    continue;
+    break;
+  }
+  if(i) {
+    // do nothing
+  }
+  if(i) {
+  } else {
+  }
+  repeat(10) {
+  }
+  while(1) {
+  }
+  do {
+  } until(1);
+  switch(b) {
+    case 1:
+      break;
+    case 2:
+      break;
+    default:
+      break;
+  }
+  with(c) {
+  }
+}
+; // nop
+exit;
+functionCall(functionArg);
+var b = $FF
+  , c = "hello world";
+a.b[1, 2, 3] = 'hello world';
+const foo = "bar";
+/*
+var obj = object {
+  thing: value
+};
+*/
+// cmpassign operators
+a += b;
+a -= b;
+a /= b;
+a *= b;
+a |= b;
+a &= b;
+a ^= b;
+a--;
+a++;
+// Binary operators
+a = a + b;
+a = a - b;
+a = a / b;
+a = a * b;
+a = a && b;
+a = a || b;
+a = a < b;
+a = a <= b;
+a = a > b;
+a = a >= b;
+a = a ^^ b;
+a = a == b;
+a = a != b;
+a = a & b;
+a = a | b;
+a = a ^ b;
+//a = a >> b;
+//a = a << b;
+//a = a div b;
+//a = a mod b;
+// Unary operators
+a = !b;
+a = ~b;
+a = -b;
