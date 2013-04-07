@@ -5,6 +5,10 @@ out
 # Compiled Typescript files
 lib/angl-scope.js
 lib/angl-scope.js.map
+
+# Downloaded TypeScript definitions
+typings
+
 # IntelliJ/WebStorm file
 main module.iml
 .idea
