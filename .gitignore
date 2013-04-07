@@ -5,6 +5,12 @@ out
 # Compiled Typescript files
 lib/angl-scope.js
 lib/angl-scope.js.map
+lib/run-all-transformations.js
+lib/run-all-transformations.js.map
+lib/process-phase-zero.js
+lib/process-phase-zero.js.map
+lib/process-phase-one.js
+lib/process-phase-one.js.map
 
 # Downloaded TypeScript definitions
 typings
