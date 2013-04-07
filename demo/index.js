@@ -6,8 +6,8 @@ var angl = require('angl/out/angl');
 var compiler = require('lib/main');
 
 $(document).ready(function($) {
-    var viewModel = window.viewModel = {}
-        ;(function() {
+    var viewModel = window.viewModel = {};
+    (function() {
         this.view = ko.observable('js');
         this.parserErrors = ko.observable();
         this.compilerErrors = ko.observable();
