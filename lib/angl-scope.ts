@@ -1,9 +1,9 @@
+/// <reference path="../typings/DefinitelyTyped/node/node.d.ts"/>
 // Scope class that represents an Angl lexical scope and all the identifiers inside it.
 
 // Remember, the "self" scope is a bit of an exception.
 // It is the scope used when no other scope has a given identifier.
 
-declare var require:any;
 var _ = require('lodash');
 var buckets = require('../vendor/buckets');
 
