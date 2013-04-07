@@ -8,5 +8,5 @@ var transformers = [
 ];
 
 export var runAllTransformations = (ast:types.AstNode):types.AstNode => {
-    return _.reduce(transformers, (ast:types.AstNode, transformer) => { transformer(ast) || ast }, ast);
+    return _.reduce(transformers, (ast:types.AstNode, transformer) => ( transformer(ast) || ast ), ast);
 };
