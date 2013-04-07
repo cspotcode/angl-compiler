@@ -2,6 +2,11 @@ node_modules
 
 out
 
+# Compiled Typescript files
+lib/angl-scope.js
+lib/angl-scope.js.map
 # IntelliJ/WebStorm file
 main module.iml
 .idea
+# gh-pages checkout for updating the website
+github-pages
