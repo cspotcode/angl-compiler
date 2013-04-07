@@ -15,7 +15,7 @@ $(document).ready(function($) {
         this.compiledJs = ko.observable();
         this.inputAngl = ko.observable('');
         this.on_getPermalinkClicked = function() {
-            var hash = encodeURIComponent(this.inputAngl());
+            var hash = '#' + encodeURIComponent(this.inputAngl());
             window.location.hash = hash;
         };
         _.bindAll(this, 'on_getPermalinkClicked');
