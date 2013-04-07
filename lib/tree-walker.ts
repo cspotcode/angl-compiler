@@ -1,5 +1,12 @@
+/// <reference path="../typings/DefinitelyTyped/node/node.d.ts"/>
+
 var nodeChildren = require('./ast-node-children');
 var _ = require('lodash');
+import types = module('./ast-types');
+
+export interface WalkerFunction {
+    (node:types.AstNode, parentNode:types.AstNode, locationInParent:string):any;
+}
 
 // Walks an AST, calling fn for each node
 // fn(node, parent, locationInParent)
@@ -8,7 +15,7 @@ var _ = require('lodash');
 //   an object, that object will replace the node in the tree
 //   null, node will be removed from the tree
 //   false, children will *not* be visited
-function walk(rootNode, fn) {
+export function walk(rootNode:types.AstNode, fn:WalkerFunction) {
     // visit this node
     fn(rootNode, null, null);
     // visit children
@@ -34,4 +41,3 @@ function _walk(node, fn) {
     });
 }
 
-module.exports = walk;

@@ -21,8 +21,15 @@ stylus(input).render(function(err, output) {
     output.to('out/demo/style.css');
 
     // Compile TypeScript
+    var tsFiles = [
+        'lib/angl-scope.ts',
+        'lib/ast-types.ts',
+        'lib/process-phase-zero.ts',
+        'lib/process-phase-one.ts',
+        'lib/run-all-transformations.ts'
+    ];
     var cmd = require.resolve('typescript/' + require('typescript/package.json').bin.tsc);
-    child_process.spawn(process.argv[0], [cmd, '--sourcemap', 'lib/angl-scope.ts'], {stdio: ['ignore', 1, 2]}).on('close', function(code) {
+    child_process.spawn(process.argv[0], [cmd, '--sourcemap'].concat(tsFiles), {stdio: ['ignore', 1, 2]}).on('close', function(code) {
         if(code) throw code;
 
         // Build a minified JS bundle

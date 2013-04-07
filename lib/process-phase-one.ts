@@ -2,9 +2,10 @@
 
 // AST transformation phase one
 
-var walk = require('./tree-walker');
+import treeWalker = module('./tree-walker');
 import scope = module('./angl-scope');
 import astTypes = module('./ast-types');
+var walk = treeWalker.walk;
 
 // Create scopes for all nodes
 
