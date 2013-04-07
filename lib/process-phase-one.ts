@@ -12,12 +12,16 @@ var walk = treeWalker.walk;
 export var transform = (ast:astTypes.AstNode) => {
     walk(ast, (node:astTypes.AstNode, parent:astTypes.AstNode, locationInParent) => {
         node.parentNode = parent;
-        node.globalAnglScope = parent.globalAnglScope;
-        node.anglScope = parent.anglScope;
+        if(parent) {
+            node.globalAnglScope = parent.globalAnglScope;
+            node.anglScope = parent.anglScope;
+        }
 
         // Scripts create a new scope
         if(node.type === 'script' || node.type === 'scriptdef') {
-            node.anglScope = new scope.AnglScope();
+            var newScope = new scope.AnglScope();
+            newScope.setParentScope(node.anglScope);
+            node.anglScope = newScope;
         }
     });
 }
