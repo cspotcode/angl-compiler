@@ -1,0 +1,47 @@
+{
+    "localPath": "typings",
+    "libPath": "lib",
+    "repo": {
+        "uriList": [
+            {
+                "sourceType": "1",
+                "source": "http://www.tsdpm.com/repository_v2.json"
+            }
+        ]
+    },
+    "dependencies": {
+        "jquery@1.9": {
+            "repo": {
+                "sourceType": "1",
+                "source": "http://www.tsdpm.com/repository_v2.json"
+            },
+            "key": "ab94ec25-d89a-483d-a904-66db6d77a174",
+            "uri": {
+                "source": "https://github.com/borisyankov/DefinitelyTyped/raw/master/jquery/jquery.d.ts",
+                "sourceType": 1
+            }
+        },
+        "node@0.10": {
+            "repo": {
+                "sourceType": "1",
+                "source": "http://www.tsdpm.com/repository_v2.json"
+            },
+            "key": "5372ddd2-2876-41fe-9243-9b61e0ac05a8",
+            "uri": {
+                "source": "https://github.com/borisyankov/DefinitelyTyped/raw/master/node/node.d.ts",
+                "sourceType": 1
+            }
+        },
+        "knockout@2.2": {
+            "repo": {
+                "sourceType": "1",
+                "source": "http://www.tsdpm.com/repository_v2.json"
+            },
+            "key": "11c59009-52a2-4f8a-8192-fbb76f1b2d2d",
+            "uri": {
+                "source": "https://github.com/borisyankov/DefinitelyTyped/raw/master/knockout/knockout.d.ts",
+                "sourceType": 1
+            }
+        }
+    }
+}
