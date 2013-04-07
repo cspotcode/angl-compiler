@@ -10,7 +10,8 @@ html
 
     body
         .left-column.container
-            textarea#input.fill-container(data-bind="value: inputAngl, valueUpdate: 'afterkeydown'")
+            .fill-container
+                textarea#input.size-to-parent(data-bind="value: inputAngl, valueUpdate: 'afterkeydown'")
         .right-column.container
             .top-row
                 input(type="radio", name="view", value="ast", data-bind="checked: view")
