@@ -1,4 +1,11 @@
-module.exports = {
+export interface ChildNamesMap {
+    [nodeTypes:string]:string[];
+}
+declare var module:{
+    exports:ChildNamesMap;
+};
+
+var nodeChildNames:ChildNamesMap = {
     // Angl source file
     "file": [
         "stmts"
@@ -124,3 +131,5 @@ module.exports = {
         "stmt"
     ]
 };
+
+(module).exports = nodeChildNames;
