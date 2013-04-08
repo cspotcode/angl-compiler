@@ -40,7 +40,7 @@ var config = {
         'path': ''
     },
     // Minify output.
-    optimize: 'uglify2',
+    optimize: 'none',
     // These two options are both required for sourcemap generation.
     preserveLicenseComments: false,
     generateSourceMaps: true
