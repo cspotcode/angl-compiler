@@ -1,5 +1,7 @@
+# Dependencies
 node_modules
 
+# Built files
 out
 
 # Compiled Typescript files
@@ -11,6 +13,16 @@ lib/process-phase-zero.js
 lib/process-phase-zero.js.map
 lib/process-phase-one.js
 lib/process-phase-one.js.map
+lib/ast-types.js
+lib/ast-types.js.map
+lib/tree-walker.js
+lib/tree-walker.js.map
+lib/global-scope.js
+lib/global-scope.js.map
+lib/compile.js
+lib/compile.js.map
+lib/ast-node-children.js
+lib/ast-node-children.js.map
 
 # Downloaded TypeScript definitions
 typings
