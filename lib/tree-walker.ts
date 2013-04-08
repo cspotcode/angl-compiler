@@ -30,11 +30,12 @@ function _walk(node, fn) {
         var child = node[childName];
         var ret;
         if(_.isArray(child)) {
+            // Loop over an array of children
             _.each(child, function(child, i) {
                 ret = fn(child, node, childName + '.' + i);
                 ret === false || _walk(child, fn);
             });
-        } else {
+        } else if(child !== undefined) { // skip nodes that aren't present on the parent (e.g. if the child is optional)
             ret = fn(child, node, childName);
             ret === false || _walk(child, fn);
         }
