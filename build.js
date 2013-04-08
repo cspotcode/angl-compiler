@@ -26,7 +26,10 @@ stylus(input).render(function(err, output) {
         'lib/ast-types.ts',
         'lib/process-phase-zero.ts',
         'lib/process-phase-one.ts',
-        'lib/run-all-transformations.ts'
+        'lib/run-all-transformations.ts',
+        'lib/tree-walker.ts',
+        'lib/compile.ts',
+        'lib/global-scope.ts'
     ];
     var cmd = require.resolve('typescript/' + require('typescript/package.json').bin.tsc);
     child_process.spawn(process.argv[0], [cmd, '--sourcemap'].concat(tsFiles), {stdio: ['ignore', 1, 2]}).on('close', function(code) {
