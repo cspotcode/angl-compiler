@@ -3,7 +3,7 @@ define(function(require) {
 var $ = require('jquery');
 var ko = require('knockout');
 var angl = require('angl/out/angl');
-var compiler = require('lib/main');
+var compiler = require('lib/compile');
 
 $(document).ready(function($) {
     var viewModel = window.viewModel = {};
@@ -12,6 +12,7 @@ $(document).ready(function($) {
         this.parserErrors = ko.observable();
         this.compilerErrors = ko.observable();
         this.ast = ko.observable();
+        this.stringifiedAst = ko.observable();
         this.compiledJs = ko.observable();
         this.inputAngl = ko.observable('');
         this.on_getPermalinkClicked = function() {
@@ -21,15 +22,17 @@ $(document).ready(function($) {
         _.bindAll(this, 'on_getPermalinkClicked');
 
         var recompile = ko.computed(function() {
+            var ast;
             try {
-                this.ast(angl.parse(this.inputAngl()));
+                ast = angl.parse(this.inputAngl());
+                this.stringifiedAst(JSON.stringify(ast, null, '    '));
             } catch(e) {
                 this.parserErrors(e.message);
                 return;
             }
             this.parserErrors(undefined);
             try {
-                this.compiledJs(compiler(this.ast()));
+                this.compiledJs(compiler.compileAst(ast));
             } catch(e) {
                 this.compilerErrors(e.message);
                 return;

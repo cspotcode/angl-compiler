@@ -35,7 +35,7 @@ html
                 // ko if: view() == 'ast'
                 // ko ifnot: parserErrors
                 code#compiledCode.scroll-box
-                    pre(data-bind="text: JSON.stringify(ast(), null, '    ')")
+                    pre(data-bind="text: stringifiedAst()")
                 // /ko
                 // ko if: parserErrors
                 div.scroll-box
