@@ -6,19 +6,32 @@
 
 var _ = require('lodash');
 var buckets = require('../vendor/buckets');
+import Variable = module('./Variable');
 
 var bucketIdProp = '_id' + new Date;
 
+var idGeneratorFn = (item) => item[bucketIdProp] = item[bucketIdProp] || _.uniqueId();
+
 export class AnglScope {
 
+    // Set of all Variables
+    private _variables;
+    // Dictionary mapping Angl identifiers to Variables.  Not all Variables have an Angl identifier.
     private _identifiers;
-    private _unnamedIdentifiers;
+    // Dictionary mapping Javascript identifiers to Variables.  Not all Variables have a Javascript identifier, though
+    // one will eventually have to be assigned to them.
+    private _jsIdentifiers;
+    // Set containing all Variables that do not have a Javascript identifier.  These identifiers will be assigned to
+    // them before Javascript code generation occurs.
+    private _unnamedVariables;
     private _parentScope;
     private _namingUid;
 
     constructor() {
         this._identifiers = new buckets.Dictionary();
-        this._unnamedIdentifiers = new buckets.Dictionary((item) => item[bucketIdProp] = item[bucketIdProp] || _.uniqueId());
+        this._jsIdentifiers = new buckets.Dictionary();
+        this._unnamedVariables = new buckets.Set(idGeneratorFn);
+        this._variables = new buckets.Set(idGeneratorFn);
         this._parentScope = null;
         this._namingUid = 0;
     }
@@ -38,39 +51,70 @@ export class AnglScope {
     // Alternatively, assign names right away and rename if necessary.
 
     // adds an identifier with the given name, throwing an exception if it already exists
-    addIdentifier(name, value) {
-        if(this.hasIdentifier(name)) throw new Error('Scope already has an identifier with the name "' + name + '"');
-        this.setIdentifier(name, value);
+    addVariable(variable:Variable.Variable) {
+        var identifier = variable.getIdentifier();
+        var jsIdentifier = variable.getJsIdentifier();
+
+        // Check that we don't have name conflicts
+        if(identifier !== null && this.hasIdentifier(identifier)) throw new Error('Scope already has an identifier with the name "' + identifier + '"');
+
+        // Add variable to our internal data structures
+        this._variables.add(variable);
+        if(identifier !== null) this._identifiers.set(identifier, variable);
+        if(jsIdentifier === null) {
+            this._unnamedVariables.add(variable);
+        } else {
+            this._jsIdentifiers.set(jsIdentifier, variable);
+        }
     }
 
     // returns value for the identifier with the given name, undefined if it doesn't exist
-    getIdentifierValue(name) {
-        return this._identifiers.get(name);
+    getVariableByIdentifier(identifier:string):Variable.Variable {
+        return this._identifiers.get(identifier);
     };
 
     // returns value for the identifier with the given name in this or any parent scope, undefined if it doesn't exist
-    getIdentifierValueInChain(name) {
-        return this._identifiers.get(name) || (this._parentScope && this._parentScope.getIdentifierValueInChain(name));
+    getVariableByIdentifierInChain(identifier:string):Variable.Variable {
+        return this._identifiers.get(identifier) || (this._parentScope && this._parentScope.getVariableByIdentifierInChain(identifier));
     };
 
     // returns true or false if identifier with given name exists or doesn't exist
-    hasIdentifier(name) {
-        return this._identifiers.containsKey(name);
+    hasIdentifier(identifier:string) {
+        return this._identifiers.containsKey(identifier);
     };
 
-    hasIdentifierInChain(name) {
-        return this.hasIdentifier(name) || !!(this._parentScope && this._parentScope.hasIdentifierInChain(name));
+    hasIdentifierInChain(identifier:string) {
+        return this.hasIdentifier(identifier) || !!(this._parentScope && this._parentScope.hasIdentifierInChain(identifier));
     }
 
     // sets identifier with given name and value, replacing previous one with that name if it exists
-    setIdentifier(name, value) {
+/*    setIdentifier(name, value) {
         this._identifiers.set(name, value);
-    };
+    };*/
 
     // removes identifier with the given name, returning true if it was removed, false if it didn't exist
-    removeIdentifier(name) {
-        this._identifiers.remove(name);
+    removeVariableByIdentifier(identifier:string):bool {
+        var variable = this.getVariableByIdentifier(identifier);
+        if(variable) {
+            this.removeVariable(variable);
+            return true;
+        } else {
+            return false;
+        }
     };
+
+    removeVariable(variable:Variable.Variable):bool {
+        var ret = this._variables.remove(variable);
+        if(ret) {
+            var jsIdentifier = variable.getJsIdentifier()
+              , identifier = variable.getIdentifier()
+              ;
+            identifier !== null && this._identifiers.remove(identifier);
+            jsIdentifier !== null && this._jsIdentifiers.remove(jsIdentifier);
+            this._unnamedVariables.remove(variable);
+        }
+        return ret;
+    }
 
     // Returns an array of all named identifier objects
     /*
@@ -86,11 +130,14 @@ export class AnglScope {
     };
     */
 
+    // Returns an array of all Variables
+    getVariablesArray():Variable.Variable[] { return this._variables.toArray(); }
+
     setParentScope(parentAnglScope) {
         this._parentScope = parentAnglScope;
     };
 
-    getParentScope() {
+    getParentScope():AnglScope {
         return this._parentScope;
     }
 
@@ -99,27 +146,31 @@ export class AnglScope {
     // will be modified to make it unique.
     // Returns an UnnamedIdentifier instance.  When this scope is asked to assign names to all unnamed identifiers, it
     // will add the assigned names into each UnnamedIdentifier instance.
-    createUnnamedIdentifier(preferredName, value) {
+    createUnnamedIdentifier(preferredName, value):UnnamedIdentifier {
         var unnamedIdentifier = new UnnamedIdentifier(preferredName);
-        this._unnamedIdentifiers.set(unnamedIdentifier, value);
+        this._unnamedVariables.set(unnamedIdentifier, value);
         return unnamedIdentifier;
     }
 
     // Converts all unnamed identifiers to regular identifiers by assigning them names
-    assignNames() {
-        this._unnamedIdentifiers.forEach((unnamedIdentifier, value) => {
-            var namePrefix = unnamedIdentifier.getPreferredName() || '__a';
+    assignJsIdentifiers():void {
+        var unnamedVariables = this._unnamedVariables.toArray();
+        _.each(unnamedVariables, (variable:Variable.Variable) => {
+            // Remove variable from self.  Will be re-added once we've assigned a JS name
+            this.removeVariable(variable);
+            var namePrefix = variable.getDesiredJsIdentifier() || '__a';
             var nameSuffix = '';
             // While the name is already in use, create a new name by using a different suffix
-            while(this._identifiers.containsKey(namePrefix + nameSuffix)) {
+            while(this._jsIdentifiers.containsKey(namePrefix + nameSuffix)) {
                 nameSuffix = '' + this._namingUid;
                 this._namingUid++;
             }
+            // Found a unique name!  Assign it.
             var name = namePrefix + nameSuffix;
-            this._identifiers.set(name, value);
-            unnamedIdentifier._assignName(name);
+            variable.setJsIdentifier(name);
+            // Re-add variable to self
+            this.addVariable(variable);
         });
-        this._unnamedIdentifiers.clear();
     }
 }
 
