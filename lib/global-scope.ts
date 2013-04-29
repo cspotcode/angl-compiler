@@ -5,7 +5,9 @@ export function createGlobalScope():scope.AnglScope {
     var globalScope = new scope.AnglScope();
 
     // TODO what values should I be adding?  Gotta invent an object/type/schema for values.
-    globalScope.addVariable(new scopeVariable.Variable('global'));
+    var variable = new scopeVariable.Variable('global', 'PROP_ASSIGNMENT', 'PROP_ACCESS');
+    variable.setContainingObjectIdentifier('anglGlobals');
+    globalScope.addVariable(variable);
 
     return globalScope;
 };
