@@ -1,11 +1,11 @@
 import scope = module('./angl-scope');
-import Variable = module('./Variable');
+import scopeVariable = module('./scope-variable');
 
 export function createGlobalScope():scope.AnglScope {
     var globalScope = new scope.AnglScope();
 
     // TODO what values should I be adding?  Gotta invent an object/type/schema for values.
-    globalScope.addVariable(new Variable.Variable('global'));
+    globalScope.addVariable(new scopeVariable.Variable('global'));
 
     return globalScope;
 };

@@ -1,7 +1,7 @@
 import types = module('./ast-types');
 var globalScope = require('./global-scope');
 import AnglScope = module('./angl-scope');
-import scopeVariable = module('./Variable');
+import scopeVariable = module('./scope-variable');
 
 // Wrap the entire AST in a "file" node
 // TODO fix typing of ast argument

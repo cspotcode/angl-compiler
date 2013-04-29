@@ -6,7 +6,7 @@ import treeWalker = module('./tree-walker');
 import scope = module('./angl-scope');
 import astTypes = module('./ast-types');
 import astUtils = module('./ast-utils');
-import scopeVariable = module('./Variable');
+import scopeVariable = module('./scope-variable');
 var _ = require('lodash');
 var walk = treeWalker.walk;
 
