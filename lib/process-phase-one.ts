@@ -74,5 +74,69 @@ export var transform = (ast:astTypes.AstNode) => {
             return replacement;
         }
 
+        // repeat loops are replaced by a for loop
+        if(node.type === 'repeat') {
+            // construct a new AstNode to replace it.
+            // allocate a temporary Javascript counter variable
+            var counterVariable = new scopeVariable.Variable();
+            counterVariable.setDesiredJsIdentifier('i');
+            astUtils.getAnglScope(node).addVariable(counterVariable);
+            var timesVariable = new scopeVariable.Variable();
+            timesVariable.setDesiredJsIdentifier('l');
+            astUtils.getAnglScope(node).addVariable(timesVariable);
+            replacement = [
+                {
+                    type: 'assign',
+                    lval: {
+                        type: 'identifier',
+                        variable: timesVariable
+                    },
+                    rval: astUtils.cleanNode(node.expr)
+                },
+                {
+                    type: 'for',
+                    initstmt: {
+                        type: 'assign',
+                        lval: {
+                            type: 'identifier',
+                            variable: counterVariable
+                        },
+                        rval: {
+                            type: 'number',
+                            val: 0
+                        }
+                    },
+                    contexpr: {
+                        type: 'binop',
+                        op: '<',
+                        expr1: {
+                            type: 'identifier',
+                            variable: counterVariable
+                        },
+                        expr2: {
+                            type: 'identifier',
+                            variable: timesVariable
+                        }
+                    },
+                    stepstmt: {
+                        type: 'cmpassign',
+                        op: '+',
+                        lval: {
+                            type: 'identifier',
+                            variable: counterVariable
+                        },
+                        rval: {
+                            type: 'number',
+                            val: 1
+                        }
+                    },
+                    stmt: astUtils.cleanNode(node.stmt)
+                }
+            ];
+            return replacement;
+
+
+        }
+
     });
 }
