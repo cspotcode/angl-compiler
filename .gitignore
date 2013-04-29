@@ -23,6 +23,14 @@ lib/compile.js
 lib/compile.js.map
 lib/ast-node-children.js
 lib/ast-node-children.js.map
+lib/scope-variable.js
+lib/scope-variable.js.map
+lib/process-phase-resolve-identifiers-to-variables.js
+lib/process-phase-resolve-identifiers-to-variables.js.map
+lib/process-phase-assign-js-identifiers.js
+lib/process-phase-assign-js-identifiers.js.map
+lib/ast-utils.js
+lib/ast-utils.js.map
 
 # Downloaded TypeScript definitions
 typings
