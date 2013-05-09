@@ -7,6 +7,7 @@ import scope = module('./angl-scope');
 import astTypes = module('./ast-types');
 import astUtils = module('./ast-utils');
 import scopeVariable = module('./scope-variable');
+import strings = module('./strings');
 var _ = require('lodash');
 var walk = treeWalker.walk;
 
@@ -27,7 +28,7 @@ export var transform = (ast:astTypes.AstNode) => {
                 throw new Error(node.type + ' must be at the root level of a file.');
             }
             var globalVar = new scopeVariable.Variable(node.name, 'PROP_ASSIGNMENT', 'PROP_ACCESS');
-            globalVar.setContainingObjectIdentifier('anglGlobals');
+            globalVar.setContainingObjectIdentifier(strings.ANGL_GLOBALS_IDENTIFIER);
             astUtils.getGlobalAnglScope(node).addVariable(globalVar);
         }
 
