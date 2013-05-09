@@ -31,6 +31,8 @@ lib/process-phase-assign-js-identifiers.js
 lib/process-phase-assign-js-identifiers.js.map
 lib/ast-utils.js
 lib/ast-utils.js.map
+lib/strings.js
+lib/strings.js.map
 
 # Downloaded TypeScript definitions
 typings

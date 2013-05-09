@@ -34,6 +34,7 @@ stylus(input).render(function(err, output) {
         'lib/process-phase-zero.ts',
         'lib/run-all-transformations.ts',
         'lib/scope-variable.ts',
+        'lib/strings.ts',
         'lib/tree-walker.ts'
     ];
     var cmd = require.resolve('typescript/' + require('typescript/package.json').bin.tsc);
