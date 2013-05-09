@@ -1,0 +1,2 @@
+# Enable line ending normalization for all files that look like text
+*   text=auto
