@@ -23,13 +23,18 @@ stylus(input).render(function(err, output) {
     // Compile TypeScript
     var tsFiles = [
         'lib/angl-scope.ts',
+        'lib/ast-node-children.ts',
         'lib/ast-types.ts',
-        'lib/process-phase-zero.ts',
-        'lib/process-phase-one.ts',
-        'lib/run-all-transformations.ts',
-        'lib/tree-walker.ts',
+        'lib/ast-utils.ts',
         'lib/compile.ts',
-        'lib/global-scope.ts'
+        'lib/global-scope.ts',
+        'lib/process-phase-assign-js-identifiers.ts',
+        'lib/process-phase-one.ts',
+        'lib/process-phase-resolve-identifiers-to-variables.ts',
+        'lib/process-phase-zero.ts',
+        'lib/run-all-transformations.ts',
+        'lib/scope-variable.ts',
+        'lib/tree-walker.ts'
     ];
     var cmd = require.resolve('typescript/' + require('typescript/package.json').bin.tsc);
     child_process.spawn(process.argv[0], [cmd, '--sourcemap'].concat(tsFiles), {stdio: ['ignore', 1, 2]}).on('close', function(code) {
