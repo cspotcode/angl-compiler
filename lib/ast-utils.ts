@@ -17,3 +17,11 @@ export var getGlobalAnglScope = (astNode:astTypes.AstNode):anglScope.AnglScope =
     while(!astNode.globalAnglScope) astNode = astNode.parentNode;
     return astNode.globalAnglScope;
 }
+
+export var findParent = (astNode:astTypes.AstNode, callback:(astNode:astTypes.AstNode)=>bool):astTypes.AstNode => {
+    while(true) {
+        astNode = astNode.parentNode;
+        if(astNode == null) return null;
+        if(callback(astNode)) return astNode;
+    }
+}
