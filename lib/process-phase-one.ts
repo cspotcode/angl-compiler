@@ -80,10 +80,10 @@ export var transform = (ast:astTypes.AstNode) => {
             // construct a new AstNode to replace it.
             // allocate a temporary Javascript counter variable
             var counterVariable = new scopeVariable.Variable();
-            counterVariable.setDesiredJsIdentifier('i');
+            counterVariable.setDesiredJsIdentifier('$i');
             astUtils.getAnglScope(node).addVariable(counterVariable);
             var timesVariable = new scopeVariable.Variable();
-            timesVariable.setDesiredJsIdentifier('l');
+            timesVariable.setDesiredJsIdentifier('$l');
             astUtils.getAnglScope(node).addVariable(timesVariable);
             replacement = [
                 {
