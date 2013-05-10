@@ -9344,7 +9344,12 @@ module.exports = buckets;
 
 });
 
-define('lib/angl-scope',['require','exports','module','lodash','../vendor/buckets'],function (require, exports, module) {var _ = require('lodash');
+define('lib/angl-scope',['require','exports','module','lodash','../vendor/buckets'],function (require, exports, module) {var __extends = this.__extends || function (d, b) {
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var _ = require('lodash');
 var buckets = require('../vendor/buckets');
 
 var bucketIdProp = '_id' + new Date();
@@ -9362,10 +9367,14 @@ var AnglScope = (function () {
     }
     AnglScope.prototype.addVariable = function (variable) {
         var identifier = variable.getIdentifier();
-        var jsIdentifier = variable.getJsIdentifier();
         if(identifier !== null && this.hasIdentifier(identifier)) {
             throw new Error('Scope already has an identifier with the name "' + identifier + '"');
         }
+        this._addVariable(variable);
+    };
+    AnglScope.prototype._addVariable = function (variable) {
+        var identifier = variable.getIdentifier();
+        var jsIdentifier = variable.getJsIdentifier();
         this._variables.add(variable);
         if(identifier !== null) {
             this._identifiers.set(identifier, variable);
@@ -9425,10 +9434,13 @@ var AnglScope = (function () {
         var _this = this;
         var unnamedVariables = this._unnamedVariables.toArray();
         _.each(unnamedVariables, function (variable) {
+            if(!variable.awaitingJsIdentifierAssignment()) {
+                return;
+            }
             _this.removeVariable(variable);
             var namePrefix = variable.getDesiredJsIdentifier() || '__a';
             var nameSuffix = '';
-            while(_this._jsIdentifiers.containsKey(namePrefix + nameSuffix)) {
+            while(_this._hasJsIdentifier(namePrefix + nameSuffix)) {
                 nameSuffix = '' + _this._namingUid;
                 _this._namingUid++;
             }
@@ -9437,9 +9449,40 @@ var AnglScope = (function () {
             _this.addVariable(variable);
         });
     };
+    AnglScope.prototype._hasJsIdentifier = function (identifier) {
+        return this._jsIdentifiers.containsKey(identifier);
+    };
     return AnglScope;
 })();
 exports.AnglScope = AnglScope;
+var WithScope = (function (_super) {
+    __extends(WithScope, _super);
+    function WithScope() {
+        _super.apply(this, arguments);
+
+    }
+    WithScope.prototype.getVariableByIdentifier = function (identifier) {
+        return _super.prototype.getVariableByIdentifier.call(this, identifier) || this._parentScope.getVariableByIdentifier(identifier);
+    };
+    WithScope.prototype.hasIdentifier = function (identifier) {
+        return _super.prototype.hasIdentifier.call(this, identifier) || this._parentScope.hasIdentifier(identifier);
+    };
+    WithScope.prototype.addVariable = function (variable) {
+        var identifier = variable.getIdentifier();
+        if(identifier !== null && _.contains([
+            'self', 
+            'other'
+        ], identifier) ? this._identifiers.containsKey(identifier) : this.hasIdentifier(identifier)) {
+            throw new Error('Scope already has an identifier with the name "' + identifier + '"');
+        }
+        this._addVariable(variable);
+    };
+    WithScope.prototype._hasJsIdentifier = function (identifier) {
+        return this._jsIdentifiers.containsKey(identifier) || this._parentScope._hasJsIdentifier(identifier);
+    };
+    return WithScope;
+})(AnglScope);
+exports.WithScope = WithScope;
 var UnnamedIdentifier = (function () {
     function UnnamedIdentifier(preferredName) {
         this._preferredName = preferredName || null;
@@ -9503,12 +9546,16 @@ var Variable = (function () {
     Variable.allocationTypes = [
         'LOCAL', 
         'ARGUMENT', 
-        'PROP_ASSIGNMENT'
+        'PROP_ASSIGNMENT', 
+        'NONE'
     ];
     Variable.accessTypes = [
         'BARE', 
         'PROP_ACCESS'
     ];
+    Variable.prototype.awaitingJsIdentifierAssignment = function () {
+        return !this._jsIdentifier;
+    };
     Variable.prototype.setDesiredJsIdentifier = function (desiredIdentifier) {
         this._desiredJsIdentifier = desiredIdentifier;
     };
@@ -9542,6 +9589,32 @@ var Variable = (function () {
     return Variable;
 })();
 exports.Variable = Variable;
+var LinkedVariable = (function () {
+    function LinkedVariable(identifier, linkedToVariable) {
+        this._identifier = identifier;
+        this._linkedToVariable = linkedToVariable;
+    }
+    LinkedVariable.prototype.awaitingJsIdentifierAssignment = function () {
+        return false;
+    };
+    LinkedVariable.prototype.getJsIdentifier = function () {
+        return this._linkedToVariable.getJsIdentifier();
+    };
+    LinkedVariable.prototype.getIdentifier = function () {
+        return this._identifier;
+    };
+    LinkedVariable.prototype.getAllocationType = function () {
+        return 'NONE';
+    };
+    LinkedVariable.prototype.getAccessType = function () {
+        return this._linkedToVariable.getAccessType();
+    };
+    LinkedVariable.prototype.getContainingObjectIdentifier = function () {
+        return this._linkedToVariable.getContainingObjectIdentifier();
+    };
+    return LinkedVariable;
+})();
+exports.LinkedVariable = LinkedVariable;
 //@ sourceMappingURL=scope-variable.js.map
 
 });
@@ -9628,6 +9701,9 @@ define('lib/ast-node-children',['require','exports','module'],function (require,
     ],
     "funccall": [
         "expr", 
+        "args"
+    ],
+    "jsfunccall": [
         "args"
     ],
     "scriptdef": [
@@ -9926,6 +10002,45 @@ exports.transform = function (ast) {
             ];
             return replacement;
         }
+        if(node.type === 'with' && !node.alreadyVisited) {
+            var outerScope = astUtils.getAnglScope(node);
+            var innerScope = new scope.WithScope();
+            innerScope.setParentScope(outerScope);
+            node.anglScope = innerScope;
+            var allObjectsVariable = new scopeVariable.Variable();
+            allObjectsVariable.setDesiredJsIdentifier('$objects');
+            outerScope.addVariable(allObjectsVariable);
+            var indexVariable = new scopeVariable.Variable();
+            indexVariable.setDesiredJsIdentifier('$i');
+            outerScope.addVariable(indexVariable);
+            var selfVariable = new scopeVariable.Variable();
+            selfVariable.setIdentifier('self');
+            selfVariable.setDesiredJsIdentifier('$withSelf');
+            innerScope.addVariable(selfVariable);
+            var otherVariable = new scopeVariable.LinkedVariable('other', outerScope.getVariableByIdentifierInChain('self'));
+            innerScope.addVariable(otherVariable);
+            node.allObjectsVariable = allObjectsVariable;
+            node.indexVariable = indexVariable;
+            var assignmentNode = {
+                type: 'assign',
+                lval: {
+                    type: 'identifier',
+                    variable: allObjectsVariable
+                },
+                rval: {
+                    type: 'jsfunccall',
+                    expr: strings.ANGL_RUNTIME_IDENTIFIER + '.resolveWithExpression',
+                    args: [
+                        astUtils.cleanNode(node.expr)
+                    ]
+                }
+            };
+            node.alreadyVisited = true;
+            return [
+                assignmentNode, 
+                node
+            ];
+        }
     });
 };
 //@ sourceMappingURL=process-phase-one.js.map
@@ -10161,6 +10276,17 @@ var generateExpression = function(astNode, omitIndentation) {
             print('}');
             break;
 
+        case 'jsfunccall':
+            print('(');
+            print(astNode.expr);
+            print(')(');
+            _.each(astNode.args, function(arg, i, args) {
+                if(i) print(', ');
+                generateExpression(arg);
+            });
+            print(')');
+            break;
+
         default:
             throw new Error('Unknown expression type: "' + astNode.type + '"');
     }
@@ -10348,8 +10474,41 @@ var generateStatement = function(astNode, omitTerminator, omitIndentation) {
             // Also it requires some sort of runtime that can find all instances of
             // a given object type to iterate over.
             // For now, I'm emitting a comment that explains code has been omitted.
+            var indexIdentifier = {
+                type: 'identifier',
+                variable: astNode.indexVariable
+            };
+            var allObjectsIdentifier = {
+                type: 'identifier',
+                variable: astNode.allObjectsVariable
+            };
+            var innerSelfIdentifier = {
+                type: 'identifier',
+                variable: astUtils.getAnglScope(astNode).getVariableByIdentifier('self')
+            };
             omitIndentation || printIndent();
-            print('/* with(){} block has been omitted.  Not implemented yet.*/');
+            print('for(');
+            generateExpression(indexIdentifier);
+            print(' = 0; ');
+            generateExpression(indexIdentifier);
+            print(' < ');
+            generateExpression(allObjectsIdentifier);
+            print('.length; ');
+            generateExpression(indexIdentifier);
+            print('++) {\n');
+            indent();
+            // Assign the value of inner `self`
+            omitIndentation || printIndent();
+            generateExpression(innerSelfIdentifier);
+            print(' = ');
+            generateExpression(allObjectsIdentifier);
+            print('[');
+            generateExpression(indexIdentifier);
+            print('];\n');
+            generateStatement(astNode.stmt);
+            outdent();
+            omitIndentation || printIndent();
+            print('}');
             break;
 
         case 'return':
