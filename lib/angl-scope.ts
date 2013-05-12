@@ -185,6 +185,36 @@ export class AnglScope {
         return this._jsIdentifiers.containsKey(identifier);
     }
 }
+
+export class WithScope extends AnglScope {
+
+    private _parentScope:AnglScope;
+    private _identifiers;
+    private _jsIdentifiers;
+
+    getVariableByIdentifier(identifier:string) { return super.getVariableByIdentifier(identifier) || this._parentScope.getVariableByIdentifier(identifier); }
+
+    hasIdentifier(identifier:string) { return super.hasIdentifier(identifier) || this._parentScope.hasIdentifier(identifier); }
+
+    addVariable(variable:scopeVariable.AbstractVariable) {
+        var identifier = variable.getIdentifier();
+
+        // Check that we don't have name conflicts.
+        // `self` and `other` are allowed to override `self` and `other` from the parent scope.
+        // For everything else, overriding is not allowed.
+        if(identifier !== null &&
+              _.contains(['self', 'other'], identifier)
+            ? this._identifiers.containsKey(identifier)
+            : this.hasIdentifier(identifier)) {
+                    throw new Error('Scope already has an identifier with the name "' + identifier + '"');
+        }
+        this._addVariable(variable);
+    }
+
+    _hasJsIdentifier(identifier:string):bool {
+        return this._jsIdentifiers.containsKey(identifier) || this._parentScope._hasJsIdentifier(identifier);
+    }
+
 }
 
 

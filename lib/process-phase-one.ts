@@ -139,5 +139,64 @@ export var transform = (ast:astTypes.AstNode) => {
 
         }
 
+        // with loops are replaced by:
+        // Converting the argument into an array of objects at runtime
+        // for-loop over each object
+        // within the loop, `other` maps to the outer `self`
+        // and `self` maps to each object from the array, one after the other
+        if(node.type === 'with' && !node.alreadyVisited) {
+
+            // Grab a reference to the outer scope
+            var outerScope = astUtils.getAnglScope(node);
+
+            // Create an inner scope for the with loop
+            var innerScope = new scope.WithScope();
+            innerScope.setParentScope(outerScope);
+            node.anglScope = innerScope;
+
+            // Create variable to hold the full list of matched objects to be iterated over
+            var allObjectsVariable = new scopeVariable.Variable();
+            allObjectsVariable.setDesiredJsIdentifier('$objects');
+            outerScope.addVariable(allObjectsVariable);
+            // Create variable to hold the index (integer) for iteration over the array of objects
+            var indexVariable = new scopeVariable.Variable();
+            indexVariable.setDesiredJsIdentifier('$i');
+            outerScope.addVariable(indexVariable);
+
+            // Create variable to hold the current subject of iteration, the current `self` value
+            var selfVariable = new scopeVariable.Variable();
+            selfVariable.setIdentifier('self');
+            selfVariable.setDesiredJsIdentifier('$withSelf');
+            innerScope.addVariable(selfVariable);
+            // Create variable that maps `other` inside the with() loop onto `self` from outside the with() loop
+            var otherVariable = new scopeVariable.LinkedVariable('other', outerScope.getVariableByIdentifierInChain('self'));
+            innerScope.addVariable(otherVariable);
+
+            // Store variables onto the with node, for using during code generation
+            node.allObjectsVariable = allObjectsVariable;
+            node.indexVariable = indexVariable;
+
+            // Prepend with() AST node with an assignment statement that creates the array of matched objects.
+            // By doing this, we ensure that the with() expression is evaluated in the outer scope.
+            var assignmentNode = {
+                type: 'assign',
+                lval: {
+                    type: 'identifier',
+                    variable: allObjectsVariable
+                },
+                rval: {
+                    type: 'jsfunccall',
+                    expr: strings.ANGL_RUNTIME_IDENTIFIER + '.resolveWithExpression',
+                    args: [ astUtils.cleanNode(node.expr) ]
+                }
+            };
+
+            // After replacement, this node will be visited again.  Mark it with a flag so that we can skip processing
+            // next time.
+            node.alreadyVisited = true;
+
+            return [assignmentNode, node];
+        }
+
     });
 }
