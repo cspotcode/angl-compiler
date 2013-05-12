@@ -8,6 +8,7 @@ import astTypes = module('./ast-types');
 import astUtils = module('./ast-utils');
 import scopeVariable = module('./scope-variable');
 import strings = module('./strings');
+var buckets = require('../vendor/buckets');
 var _ = require('lodash');
 var walk = treeWalker.walk;
 
@@ -24,7 +25,7 @@ export var transform = (ast:astTypes.AstNode) => {
 
         // Script definitions register an identifier into the parent scope
         if(node.type === 'scriptdef' || node.type === 'const') {
-            if(node.parentNode.type !== 'file') {
+            if(node.parentNode.type !== 'file' && (node.parentNode.type !== 'object' || node.type !== 'scriptdef')) {
                 throw new Error(node.type + ' must be at the root level of a file.');
             }
             var globalVar = new scopeVariable.Variable(node.name, 'PROP_ASSIGNMENT', 'PROP_ACCESS');
@@ -197,6 +198,103 @@ export var transform = (ast:astTypes.AstNode) => {
 
             return [assignmentNode, node];
         }
+
+        if(node.type === 'object') {
+            // Initialize some basic containers for storing methods, create, destroy, and property assignments
+            node.propertyNames = new buckets.Set();
+            node.properties = [];
+            node.methodNames = new buckets.Set();
+            node.methods = [];
+            // TODO can't have properties with the same names as methods
+
+            // Create the script that will initialize all properties
+            node.propertyinitscript = {
+                type: 'script',
+                args: [],
+                stmts: {
+                    type: 'statements',
+                    list: node.properties
+                }
+            };
+
+            // process all contained statements, storing them onto the object node
+            _.each(node.stmts, (stmt) => {
+                switch(stmt.type) {
+                    case 'scriptdef':
+                        if(node.methodNames.contains(stmt.name)) {
+                            throw new Error('Method ' + JSON.stringify(stmt.name) + ' defined more than once for object ' + JSON.stringify(node.name));
+                        }
+                        node.methodNames.add(stmt.name);
+                        var stmt = astUtils.cleanNode(stmt);
+                        node.methods.push({
+                            type: 'script',
+                            args: stmt.args,
+                            stmts: stmt.stmts,
+                            methodname: stmt.name
+                        });
+                        break;
+
+                    case 'createdef':
+                        if(node.createscript) {
+                            throw new Error('Multiple create scripts defined for object ' + JSON.stringify(node.name));
+                        }
+                        node.createscript = {
+                            type: 'script',
+                            args: stmt.args,
+                            stmts: stmt.stmts
+                        };
+                        break;
+
+                    case 'destroydef':
+                        if(node.destroyscript) {
+                            throw new Error('Multiple destroy scripts defined for object ' + JSON.stringify(node.name));
+                        }
+                        node.destroyscript = {
+                            type: 'script',
+                            args: [],
+                            stmts: stmt.stmts
+                        };
+                        break;
+
+                    case 'property':
+                        if(node.propertyNames.contains(stmt.name)) {
+                            throw new Error('Cannot initialize object property ' + JSON.stringify(stmt.name) + 'more than once for object ' + JSON.stringify(node.name));
+                        }
+                        node.propertyNames.add(stmt.name);
+                        node.properties.push({
+                            type: 'assign',
+                            lval: {
+                                type: 'binop',
+                                op: '.',
+                                expr1: {
+                                    type: 'identifier',
+                                    name: 'self'
+                                },
+                                expr2: {
+                                    type: 'identifier',
+                                    name: stmt.name
+                                }
+                            },
+                            rval: astUtils.cleanNode(stmt.expr)
+                        });
+                        break;
+
+                    default:
+                        throw new Error('Unexpected child node of "object": ' + JSON.stringify(stmt.type));
+                }
+            });
+            // We've placed all statements into their respective containers, so now we empty the stmts array so that the
+            // walker doesn't traverse it.
+            // The walker will still traverse all methods, properties, create, and destroy via their new locations
+            // on the object node.
+            node.stmts = [];
+        }
+
+        // Transform all methods into anonymous script nodes?
+        // TODO implement `super()` calls search upwards for a method node, use that to figure out the method name and parent class
+        // Property assignments are manually converted to property access on `self`.
+        // This makes the code generator happy: it will spit out `this.` without any complicated, ugly code generated.
+
 
     });
 }

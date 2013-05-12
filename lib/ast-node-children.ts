@@ -61,7 +61,11 @@ var nodeChildNames:ChildNamesMap = {
     ],
     // Objects
     "object": [
-        "stmts"
+        "stmts",
+        "propertyinitscript",
+        "createscript",
+        "destroyscript",
+        "methods"
     ],
     "createdef": [
         "stmts"
