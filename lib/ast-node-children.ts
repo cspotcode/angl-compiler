@@ -48,6 +48,10 @@ var nodeChildNames:ChildNamesMap = {
         "expr",
         "args"
     ],
+    // Javascript function invocation
+    "jsfunccall": [
+        "args"
+    ],
     // Scripts
     "scriptdef": [
         "stmts"
