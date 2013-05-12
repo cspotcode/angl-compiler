@@ -169,7 +169,7 @@ export class AnglScope {
             var namePrefix = variable.getDesiredJsIdentifier() || '__a';
             var nameSuffix = '';
             // While the name is already in use, create a new name by using a different suffix
-            while(this._jsIdentifiers.containsKey(namePrefix + nameSuffix)) {
+            while(this._hasJsIdentifier(namePrefix + nameSuffix)) {
                 nameSuffix = '' + this._namingUid;
                 this._namingUid++;
             }
@@ -180,6 +180,11 @@ export class AnglScope {
             this.addVariable(variable);
         });
     }
+
+    _hasJsIdentifier(identifier:string):bool {
+        return this._jsIdentifiers.containsKey(identifier);
+    }
+}
 }
 
 
