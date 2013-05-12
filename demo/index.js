@@ -9957,6 +9957,19 @@ exports.transform = function (ast) {
             });
             return replacement;
         }
+        if(node.type === 'identifier' && !(_.find([
+            node.parentNode
+        ], {
+            type: 'binop',
+            op: '.'
+        }) && node.parentNode.expr2 === node)) {
+            var notLocal = true;
+            var variable = astUtils.getAnglScope(node).getVariableByIdentifierInChain(node.name);
+            if(variable && variable.getAllocationType() === 'LOCAL') {
+                notLocal = false;
+            }
+            node.notLocal = notLocal;
+        }
         if(node.type === 'repeat') {
             var counterVariable = new scopeVariable.Variable();
             counterVariable.setDesiredJsIdentifier('$i');
@@ -10130,6 +10143,14 @@ exports.transform = function (ast) {
             });
             node.stmts = [];
         }
+        if(node.type === 'super') {
+            var methodNode = astUtils.findParent(node, function (parentNode) {
+                parentNode.type === 'script' && parentNode.methodname;
+            });
+            var objectNode = astUtils.findParent(methodNode, function (parentNode) {
+                parentNode.type === 'object';
+            });
+        }
     });
 };
 //@ sourceMappingURL=process-phase-one.js.map
@@ -10150,7 +10171,16 @@ exports.transform = function (ast) {
             if(node.variable) {
                 return;
             }
-            var variable = astUtils.getAnglScope(node).getVariableByIdentifierInChain(node.name);
+            var scope = astUtils.getAnglScope(node);
+            var variable;
+            while(true) {
+                variable = scope.getVariableByIdentifierInChain(node.name);
+                if(node.notLocal && variable && variable.getAllocationType() === 'LOCAL') {
+                    scope = scope.getParentScope();
+                    continue;
+                }
+                break;
+            }
             if(!variable) {
                 return {
                     type: 'binop',
@@ -10393,7 +10423,7 @@ var generateExpression = function(astNode, omitIndentation) {
             print('(');
             print(astNode.expr);
             print(')(');
-            _.each(astNode.args, function(arg, i, args) {
+            _.each(astNode.args, function(arg, i) {
                 if(i) print(', ');
                 generateExpression(arg);
             });
