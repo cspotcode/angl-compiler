@@ -2,7 +2,15 @@
 
 var _ = require('lodash');
 
-export class Variable {
+export interface AbstractVariable {
+    getJsIdentifier():string;
+    getIdentifier():string;
+    getAllocationType():string;
+    getAccessType():string;
+    getContainingObjectIdentifier():string;
+}
+
+export class Variable implements AbstractVariable {
 
     private _identifier:string;
     private _allocationType:string;

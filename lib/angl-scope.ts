@@ -51,9 +51,8 @@ export class AnglScope {
     // Alternatively, assign names right away and rename if necessary.
 
     // adds an identifier with the given name, throwing an exception if it already exists
-    addVariable(variable:scopeVariable.Variable) {
+    addVariable(variable:scopeVariable.AbstractVariable) {
         var identifier = variable.getIdentifier();
-        var jsIdentifier = variable.getJsIdentifier();
 
         // Check that we don't have name conflicts
         if(identifier !== null && this.hasIdentifier(identifier)) throw new Error('Scope already has an identifier with the name "' + identifier + '"');
@@ -69,12 +68,12 @@ export class AnglScope {
     }
 
     // returns value for the identifier with the given name, undefined if it doesn't exist
-    getVariableByIdentifier(identifier:string):scopeVariable.Variable {
+    getVariableByIdentifier(identifier:string):scopeVariable.AbstractVariable {
         return this._identifiers.get(identifier);
     };
 
     // returns value for the identifier with the given name in this or any parent scope, undefined if it doesn't exist
-    getVariableByIdentifierInChain(identifier:string):scopeVariable.Variable {
+    getVariableByIdentifierInChain(identifier:string):scopeVariable.AbstractVariable {
         return this._identifiers.get(identifier) || (this._parentScope && this._parentScope.getVariableByIdentifierInChain(identifier));
     };
 
@@ -103,7 +102,7 @@ export class AnglScope {
         }
     };
 
-    removeVariable(variable:scopeVariable.Variable):bool {
+    removeVariable(variable:scopeVariable.AbstractVariable):bool {
         var ret = this._variables.remove(variable);
         if(ret) {
             var jsIdentifier = variable.getJsIdentifier()
@@ -131,7 +130,7 @@ export class AnglScope {
     */
 
     // Returns an array of all Variables
-    getVariablesArray():scopeVariable.Variable[] { return this._variables.toArray(); }
+    getVariablesArray():scopeVariable.AbstractVariable[] { return this._variables.toArray(); }
 
     setParentScope(parentAnglScope) {
         this._parentScope = parentAnglScope;
