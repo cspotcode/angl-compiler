@@ -1,2 +1,2 @@
-export var ANGL_GLOBALS_IDENTIFIER = "$anglGlobals";
-export var ANGL_RUNTIME_IDENTIFIER = "$anglRuntime";
+export var ANGL_GLOBALS_IDENTIFIER = "$AG";
+export var ANGL_RUNTIME_IDENTIFIER = "$ART";
