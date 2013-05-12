@@ -56,6 +56,13 @@ export class AnglScope {
 
         // Check that we don't have name conflicts
         if(identifier !== null && this.hasIdentifier(identifier)) throw new Error('Scope already has an identifier with the name "' + identifier + '"');
+        this._addVariable(variable);
+    }
+
+    // Internal method for adding variables
+    _addVariable(variable:scopeVariable.AbstractVariable) {
+        var identifier = variable.getIdentifier();
+        var jsIdentifier = variable.getJsIdentifier();
 
         // Add variable to our internal data structures
         this._variables.add(variable);
