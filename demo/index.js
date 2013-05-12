@@ -1328,85 +1328,85 @@ case 24:return 61;
 break;
 case 25:return 98;
 break;
-case 26:return 72;        /* 123.4 */
+case 26:return 93;
 break;
-case 27:return 73;           /* $FF00AA */
+case 27:return 94;
 break;
-case 28:return 74;        /* "string" */
+case 28:return 72;        /* 123.4 */
 break;
-case 29:return 74;        /* 'string' */
+case 29:return 73;           /* $FF00AA */
 break;
-case 30:return 49;    /* var_name3 */
+case 30:return 74;        /* "string" */
 break;
-case 31:return 14;
+case 31:return 74;        /* 'string' */
 break;
-case 32:return 50;
+case 32:return 49;    /* var_name3 */
 break;
-case 33:return 44;
+case 33:return 14;
 break;
-case 34:return 24;
+case 34:return 50;
 break;
-case 35:return 25;
+case 35:return 44;
 break;
-case 36:return 63;
+case 36:return 24;
 break;
-case 37:return 64;
+case 37:return 25;
 break;
-case 38:return 65;
+case 38:return 63;
 break;
-case 39:return 66;
+case 39:return 64;
 break;
-case 40:return 67;
+case 40:return 65;
 break;
-case 41:return 68;
+case 41:return 66;
 break;
-case 42:return 69;
+case 42:return 67;
 break;
-case 43:return 70;
+case 43:return 68;
 break;
-case 44:return 71;
+case 44:return 69;
 break;
-case 45:return 75;
+case 45:return 70;
 break;
-case 46:return 76;
+case 46:return 71;
 break;
-case 47:return 77;
+case 47:return 87;
 break;
-case 48:return 79;
+case 48:return 88;
 break;
-case 49:return 78;
+case 49:return 75;
 break;
-case 50:return 80;
+case 50:return 76;
 break;
-case 51:return 81
+case 51:return 77;
 break;
-case 52:return 83;;
+case 52:return 79;
 break;
-case 53:return 82;
+case 53:return 78;
 break;
-case 54:return 51;
+case 54:return 80;
 break;
-case 55:return 84;
+case 55:return 81
 break;
-case 56:return 85;
+case 56:return 83;;
 break;
-case 57:return 86;
+case 57:return 82;
 break;
-case 58:return 87;
+case 58:return 51;
 break;
-case 59:return 88;
+case 59:return 84;
 break;
-case 60:return 89;
+case 60:return 85;
 break;
-case 61:return 90;
+case 61:return 86;
 break;
-case 62:return 91;
+case 62:return 89;
 break;
-case 63:return 92;
+case 63:return 90;
 break;
-case 64:return 93;
+case 64:return 91;
 break;
-case 65:return 94;
+case 65:return 92;
 break;
 case 66:return 95;
 break;
@@ -1426,7 +1426,7 @@ case 73:return 5;
 break;
 }
 },
-rules: [/^(?:\s+)/,/^(?:\/\*[\s\S]*?\*\/)/,/^(?:\/\/.*)/,/^(?:var\b)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:repeat\b)/,/^(?:while\b)/,/^(?:do\b)/,/^(?:until\b)/,/^(?:for\b)/,/^(?:switch\b)/,/^(?:case\b)/,/^(?:with\b)/,/^(?:default\b)/,/^(?:break\b)/,/^(?:continue\b)/,/^(?:exit\b)/,/^(?:return\b)/,/^(?:object\b)/,/^(?:script\b)/,/^(?:const\b)/,/^(?:parent\b)/,/^(?:create\b)/,/^(?:destroy\b)/,/^(?:super\b)/,/^(?:[0-9]+(\.[0-9]+)?\b)/,/^(?:\$[0-9a-fA-F]+\b)/,/^(?:"[\s\S]*?")/,/^(?:'[\s\S]*?')/,/^(?:[a-zA-Z_][0-9a-zA-Z_]*)/,/^(?:;)/,/^(?:,)/,/^(?::)/,/^(?:\{)/,/^(?:\})/,/^(?:\+\+)/,/^(?:--)/,/^(?:\+=)/,/^(?:-=)/,/^(?:\*=)/,/^(?:\/=)/,/^(?:\|=)/,/^(?:&=)/,/^(?:\^=)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:\^\^)/,/^(?:<=)/,/^(?:<)/,/^(?:==)/,/^(?:!=)/,/^(?:>=)/,/^(?:>)/,/^(?:=)/,/^(?:\|)/,/^(?:&)/,/^(?:\^)/,/^(?:<<)/,/^(?:>>)/,/^(?:\+)/,/^(?:-)/,/^(?:\*)/,/^(?:\/)/,/^(?:div\b)/,/^(?:mod\b)/,/^(?:!)/,/^(?:~)/,/^(?:\.)/,/^(?:\[)/,/^(?:\])/,/^(?:\()/,/^(?:\))/,/^(?:$)/],
+rules: [/^(?:\s+)/,/^(?:\/\*[\s\S]*?\*\/)/,/^(?:\/\/.*)/,/^(?:var\b)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:repeat\b)/,/^(?:while\b)/,/^(?:do\b)/,/^(?:until\b)/,/^(?:for\b)/,/^(?:switch\b)/,/^(?:case\b)/,/^(?:with\b)/,/^(?:default\b)/,/^(?:break\b)/,/^(?:continue\b)/,/^(?:exit\b)/,/^(?:return\b)/,/^(?:object\b)/,/^(?:script\b)/,/^(?:const\b)/,/^(?:parent\b)/,/^(?:create\b)/,/^(?:destroy\b)/,/^(?:super\b)/,/^(?:div\b)/,/^(?:mod\b)/,/^(?:[0-9]+(\.[0-9]+)?\b)/,/^(?:\$[0-9a-fA-F]+\b)/,/^(?:"[\s\S]*?")/,/^(?:'[\s\S]*?')/,/^(?:[a-zA-Z_][0-9a-zA-Z_]*)/,/^(?:;)/,/^(?:,)/,/^(?::)/,/^(?:\{)/,/^(?:\})/,/^(?:\+\+)/,/^(?:--)/,/^(?:\+=)/,/^(?:-=)/,/^(?:\*=)/,/^(?:\/=)/,/^(?:\|=)/,/^(?:&=)/,/^(?:\^=)/,/^(?:<<)/,/^(?:>>)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:\^\^)/,/^(?:<=)/,/^(?:<)/,/^(?:==)/,/^(?:!=)/,/^(?:>=)/,/^(?:>)/,/^(?:=)/,/^(?:\|)/,/^(?:&)/,/^(?:\^)/,/^(?:\+)/,/^(?:-)/,/^(?:\*)/,/^(?:\/)/,/^(?:!)/,/^(?:~)/,/^(?:\.)/,/^(?:\[)/,/^(?:\])/,/^(?:\()/,/^(?:\))/,/^(?:$)/],
 conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73],"inclusive":true}}
 };
 return lexer;
@@ -9619,20 +9619,28 @@ exports.LinkedVariable = LinkedVariable;
 
 });
 
-define('lib/strings',['require','exports','module'],function (require, exports, module) {exports.ANGL_GLOBALS_IDENTIFIER = "$anglGlobals";
-exports.ANGL_RUNTIME_IDENTIFIER = "$anglRuntime";
+define('lib/strings',['require','exports','module'],function (require, exports, module) {exports.ANGL_GLOBALS_IDENTIFIER = '$AG';
+exports.ANGL_GLOBALS_MODULE = 'AnglGlobals';
+exports.ANGL_RUNTIME_IDENTIFIER = '$ART';
+exports.ANGL_RUNTIME_MODULE = 'AnglRuntime';
+exports.ANGL_FILE_MODULE_PREFIX = 'CompiledAngl/';
 //@ sourceMappingURL=strings.js.map
 
 });
 
-define('lib/global-scope',['require','exports','module','./angl-scope','./scope-variable','./strings'],function (require, exports, module) {var scope = require('./angl-scope')
+define('lib/global-scope',['require','exports','module','./angl-scope','./scope-variable','./strings','lodash'],function (require, exports, module) {var scope = require('./angl-scope')
 var scopeVariable = require('./scope-variable')
 var strings = require('./strings')
+var _ = require('lodash');
 function createGlobalScope() {
     var globalScope = new scope.AnglScope();
-    var variable = new scopeVariable.Variable('global', 'PROP_ASSIGNMENT', 'PROP_ACCESS');
-    variable.setContainingObjectIdentifier(strings.ANGL_GLOBALS_IDENTIFIER);
-    globalScope.addVariable(variable);
+    var globalIdentifiers = 'global true false';
+    globalIdentifiers = globalIdentifiers.split(' ');
+    _.each(globalIdentifiers, function (globalIdentifier) {
+        var variable = new scopeVariable.Variable(globalIdentifier, 'PROP_ASSIGNMENT', 'PROP_ACCESS');
+        variable.setContainingObjectIdentifier(strings.ANGL_GLOBALS_IDENTIFIER);
+        globalScope.addVariable(variable);
+    });
     return globalScope;
 }
 exports.createGlobalScope = createGlobalScope;
@@ -9713,7 +9721,11 @@ define('lib/ast-node-children',['require','exports','module'],function (require,
         "stmts"
     ],
     "object": [
-        "stmts"
+        "stmts", 
+        "propertyinitscript", 
+        "createscript", 
+        "destroyscript", 
+        "methods"
     ],
     "createdef": [
         "stmts"
@@ -9890,19 +9902,20 @@ exports.findParent = function (astNode, callback) {
 
 });
 
-define('lib/process-phase-one',['require','exports','module','./tree-walker','./angl-scope','./ast-utils','./scope-variable','./strings','lodash'],function (require, exports, module) {var treeWalker = require('./tree-walker')
+define('lib/process-phase-one',['require','exports','module','./tree-walker','./angl-scope','./ast-utils','./scope-variable','./strings','../vendor/buckets','lodash'],function (require, exports, module) {var treeWalker = require('./tree-walker')
 var scope = require('./angl-scope')
 
 var astUtils = require('./ast-utils')
 var scopeVariable = require('./scope-variable')
 var strings = require('./strings')
+var buckets = require('../vendor/buckets');
 var _ = require('lodash');
 var walk = treeWalker.walk;
 exports.transform = function (ast) {
     walk(ast, function (node, parent, locationInParent) {
         var replacement;
         if(node.type === 'scriptdef' || node.type === 'const') {
-            if(node.parentNode.type !== 'file') {
+            if(node.parentNode.type !== 'file' && (node.parentNode.type !== 'object' || node.type !== 'scriptdef')) {
                 throw new Error(node.type + ' must be at the root level of a file.');
             }
             var globalVar = new scopeVariable.Variable(node.name, 'PROP_ASSIGNMENT', 'PROP_ACCESS');
@@ -10041,6 +10054,82 @@ exports.transform = function (ast) {
                 node
             ];
         }
+        if(node.type === 'object') {
+            node.propertyNames = new buckets.Set();
+            node.properties = [];
+            node.methodNames = new buckets.Set();
+            node.methods = [];
+            node.propertyinitscript = {
+                type: 'script',
+                args: [],
+                stmts: {
+                    type: 'statements',
+                    list: node.properties
+                }
+            };
+            _.each(node.stmts, function (stmt) {
+                switch(stmt.type) {
+                    case 'scriptdef':
+                        if(node.methodNames.contains(stmt.name)) {
+                            throw new Error('Method ' + JSON.stringify(stmt.name) + ' defined more than once for object ' + JSON.stringify(node.name));
+                        }
+                        node.methodNames.add(stmt.name);
+                        var stmt = astUtils.cleanNode(stmt);
+                        node.methods.push({
+                            type: 'script',
+                            args: stmt.args,
+                            stmts: stmt.stmts,
+                            methodname: stmt.name
+                        });
+                        break;
+                    case 'createdef':
+                        if(node.createscript) {
+                            throw new Error('Multiple create scripts defined for object ' + JSON.stringify(node.name));
+                        }
+                        node.createscript = {
+                            type: 'script',
+                            args: stmt.args,
+                            stmts: stmt.stmts
+                        };
+                        break;
+                    case 'destroydef':
+                        if(node.destroyscript) {
+                            throw new Error('Multiple destroy scripts defined for object ' + JSON.stringify(node.name));
+                        }
+                        node.destroyscript = {
+                            type: 'script',
+                            args: [],
+                            stmts: stmt.stmts
+                        };
+                        break;
+                    case 'property':
+                        if(node.propertyNames.contains(stmt.name)) {
+                            throw new Error('Cannot initialize object property ' + JSON.stringify(stmt.name) + 'more than once for object ' + JSON.stringify(node.name));
+                        }
+                        node.propertyNames.add(stmt.name);
+                        node.properties.push({
+                            type: 'assign',
+                            lval: {
+                                type: 'binop',
+                                op: '.',
+                                expr1: {
+                                    type: 'identifier',
+                                    name: 'self'
+                                },
+                                expr2: {
+                                    type: 'identifier',
+                                    name: stmt.name
+                                }
+                            },
+                            rval: astUtils.cleanNode(stmt.expr)
+                        });
+                        break;
+                    default:
+                        throw new Error('Unexpected child node of "object": ' + JSON.stringify(stmt.type));
+                }
+            });
+            node.stmts = [];
+        }
     });
 };
 //@ sourceMappingURL=process-phase-one.js.map
@@ -10176,15 +10265,39 @@ var generateExpression = function(astNode, omitIndentation) {
         case 'binop':
             print('(');
             // special-case the dot operator
-            if(astNode.op === '.') {
-                print(strings.ANGL_RUNTIME_IDENTIFIER + '.resolveObjectBeforeDot(');
-                generateExpression(astNode.expr1);
-                print(').');
-                generateExpression(astNode.expr2);
-            } else { // all other operators
-                generateExpression(astNode.expr1);
-                print(' ' + astNode.op + ' ');
-                generateExpression(astNode.expr2);
+            switch(astNode.op) {
+                case '.':
+                    // Special case: if `self` or `other is on the left side of the dot, we don't need to dereference
+                    if(astNode.expr1.type === 'identifier' && astNode.expr1.variable && _.contains(['self', 'other'], astNode.expr1.variable.getIdentifier())) {
+                        generateExpression(astNode.expr1);
+                        print('.');
+                        generateExpression(astNode.expr2);
+                    } else {
+                        print(strings.ANGL_RUNTIME_IDENTIFIER + '.resolveObjectBeforeDot(');
+                        generateExpression(astNode.expr1);
+                        print(').');
+                        generateExpression(astNode.expr2);
+                    }
+                    break;
+
+                case 'div':
+                    print('(');
+                    generateExpression(astNode.expr1);
+                    print(' / ');
+                    generateExpression(astNode.expr2);
+                    print(')|0');
+                    break;
+
+                case 'mod':
+                    generateExpression(astNode.expr1);
+                    print(' % ');
+                    generateExpression(astNode.expr2);
+                    break;
+
+                default:
+                    generateExpression(astNode.expr1);
+                    print(' ' + astNode.op + ' ');
+                    generateExpression(astNode.expr2);
             }
             print(')');
             break;
@@ -10391,7 +10504,7 @@ var generateStatement = function(astNode, omitTerminator, omitIndentation) {
                     expr1: astNode.lval,
                     expr2: astNode.rval
                 }
-            }, omitTerminator, omitIndentation);
+            }, true, omitIndentation);
             break;
 
         case 'ifelse':
@@ -10423,9 +10536,9 @@ var generateStatement = function(astNode, omitTerminator, omitIndentation) {
 
         case 'while':
             omitIndentation || printIndent();
-            print('while(');
+            print('while((');
             generateExpression(astNode.expr);
-            print(') {\n');
+            print(') !== 0) {\n');
             indent();
             generateStatement(astNode.stmt);
             outdent();
@@ -10526,6 +10639,41 @@ var generateStatement = function(astNode, omitTerminator, omitIndentation) {
             print('return');
             break;
 
+        case 'object':
+            var objectExpr = strings.ANGL_GLOBALS_IDENTIFIER + '.' + astNode.name;
+            var protoExpr = objectExpr + '.prototype';
+            // Generate the constructor function
+            omitIndentation || printIndent();
+            print(objectExpr + ' = function() {};\n');
+            // TODO create the prototype
+            // Generate all methods
+            _.each(astNode.methods, function(method) {
+                omitIndentation || printIndent();
+                print(protoExpr + '.' + method.methodname + ' = ');
+                generateExpression(method);
+                print(';\n');
+            });
+            // Generate the create event, if specified
+            if(astNode.createscript) {
+                omitIndentation || printIndent();
+                print(protoExpr + '.$create = ');
+                generateExpression(astNode.createscript);
+                print(';\n');
+            }
+            // Generate the destroy event, if specified
+            if(astNode.destroyscript) {
+                omitIndentation || printIndent();
+                print(protoExpr + '.$destroy = ');
+                generateExpression(astNode.destroyscript);
+                print(';\n');
+            }
+            // Generate the property initialization function
+            omitIndentation || printIndent();
+            print(protoExpr + '.$initproperties = ');
+            generateExpression(astNode.propertyinitscript);
+            //print(';\n');
+            break;
+
         case 'nop':
             // No-ops don't do anything.  I'm assuming they never trigger any behavior by
             // "seperating" adjacent statements.
@@ -10587,15 +10735,25 @@ var generateTopNode = function(astNode) {
     switch(astNode.type) {
 
         case 'file':
-            print(';(function(){\n');
+            // RequireJS `define()` call
+            print('define(function(require) {\n');
             indent();
+            printIndent();
+            // Something removes "use strict" from the source code unless I split it up like so.  RequireJS perhaps?
+            print('"use' + ' strict";\n');
+            // require modules
+            printIndent();
+            print('var ' + strings.ANGL_GLOBALS_IDENTIFIER + ' = require(' + JSON.stringify(strings.ANGL_GLOBALS_MODULE) + ');\n');
+            printIndent();
+            print('var ' + strings.ANGL_RUNTIME_IDENTIFIER + ' = require(' + JSON.stringify(strings.ANGL_RUNTIME_MODULE) + ');\n');
+            // allocate local variables
             generateLocalVariableAllocation(astNode);
             // delegate to the statement generator
             _.each(astNode.stmts, function(node) {
                 generateStatement(node);
             });
             outdent();
-            print('}());');
+            print('});');
             break;
 
         default:
