@@ -20,7 +20,7 @@ export class Variable implements AbstractVariable {
     private _jsIdentifier:string;
     private _containingObjectIdentifier:string;
 
-    private static allocationTypes = ['LOCAL', 'ARGUMENT', 'PROP_ASSIGNMENT'];
+    private static allocationTypes = ['LOCAL', 'ARGUMENT', 'PROP_ASSIGNMENT', 'NONE'];
     private static accessTypes = ['BARE', 'PROP_ACCESS'];
 
     constructor(identifier?:string = null, allocationType?:string = 'LOCAL', accessType?:string = 'BARE') {
