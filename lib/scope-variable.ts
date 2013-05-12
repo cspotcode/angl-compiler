@@ -58,3 +58,29 @@ export class Variable implements AbstractVariable {
     getContainingObjectIdentifier():string { return this._containingObjectIdentifier; }
 }
 
+// A variable that has its own identifier in Angl, but actually maps to the same JS variable as another
+// AbstractVariable.
+export class LinkedVariable implements AbstractVariable {
+
+    private _linkedToVariable:AbstractVariable;
+    private _identifier:string;
+
+    constructor(identifier: string, linkedToVariable:AbstractVariable) {
+        this._identifier = identifier;
+        this._linkedToVariable = linkedToVariable;
+    }
+
+    awaitingJsIdentifierAssignment() { return false; }
+
+    getJsIdentifier():string { return this._linkedToVariable.getJsIdentifier(); }
+
+    getIdentifier():string { return this._identifier; }
+
+    // Linked variables are never allocated because they point at another variable that *is* allocated.
+    getAllocationType():string { return 'NONE'; }
+
+    getAccessType():string { return this._linkedToVariable.getAccessType(); }
+
+    getContainingObjectIdentifier():string { return this._linkedToVariable.getContainingObjectIdentifier(); }
+
+}
