@@ -155,6 +155,8 @@ export class AnglScope {
     assignJsIdentifiers():void {
         var unnamedVariables = this._unnamedVariables.toArray();
         _.each(unnamedVariables, (variable:scopeVariable.Variable) => {
+            // Some variables might be unnamed but don't want us to assign them a name.  (e.g. LinkedVariables)
+            if(!variable.awaitingJsIdentifierAssignment()) return;
             // Remove variable from self.  Will be re-added once we've assigned a JS name
             this.removeVariable(variable);
             var namePrefix = variable.getDesiredJsIdentifier() || '__a';

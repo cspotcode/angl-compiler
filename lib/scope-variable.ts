@@ -3,6 +3,7 @@
 var _ = require('lodash');
 
 export interface AbstractVariable {
+    awaitingJsIdentifierAssignment():bool;
     getJsIdentifier():string;
     getIdentifier():string;
     getAllocationType():string;
@@ -33,6 +34,8 @@ export class Variable implements AbstractVariable {
         this._accessType = accessType;
         this._containingObjectIdentifier = null;
     }
+
+    awaitingJsIdentifierAssignment() { return !this._jsIdentifier; }
 
     setDesiredJsIdentifier(desiredIdentifier:string) { this._desiredJsIdentifier = desiredIdentifier; }
 
