@@ -22,7 +22,17 @@ export var transform = (ast:astTypes.AstNode) => {
             if(node.variable) {
                 return;
             }
-            var variable = astUtils.getAnglScope(node).getVariableByIdentifierInChain(node.name);
+            var scope = astUtils.getAnglScope(node);
+            var variable;
+            while(true) {
+                variable = scope.getVariableByIdentifierInChain(node.name);
+                if(node.notLocal && variable && variable.getAllocationType() === 'LOCAL') {
+                    // can't be this local variable, because the identifier node was marked as being non-local
+                    scope = scope.getParentScope();
+                    continue;
+                }
+                break;
+            }
             // If there's no variable by that name in scope, then we're dealing with a property of `this`
             // (e.g. `this.bar`)
             if(!variable) {

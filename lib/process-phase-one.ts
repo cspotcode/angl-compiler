@@ -76,6 +76,20 @@ export var transform = (ast:astTypes.AstNode) => {
             return replacement;
         }
 
+        // Identifiers that don't resolve to a local variable are marked as non-local.  Otherwise, they might resolve to
+        // a local variable that gets declared *after* the current statement, which is not the way GML behaves.
+
+        // If node is an identifier that's *not* the right side of a dot operator, check whether or not it resolves to a
+        // local variable
+        if(node.type === 'identifier' && !(_.find([node.parentNode], {type: 'binop', op: '.'}) && node.parentNode.expr2 === node)) {
+            // notLocal means "cannot be local because, at the time we ran this check, there was not a local variable by that name"
+            // This behavior will work as long as this transformation phase processes source code from top to bottom
+            var notLocal = true;
+            var variable = astUtils.getAnglScope(node).getVariableByIdentifierInChain(node.name);
+            if(variable && variable.getAllocationType() === 'LOCAL') notLocal = false;
+            node.notLocal = notLocal;
+        }
+
         // repeat loops are replaced by a for loop
         if(node.type === 'repeat') {
             // construct a new AstNode to replace it.
