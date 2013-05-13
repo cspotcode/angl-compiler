@@ -9624,6 +9624,7 @@ exports.ANGL_GLOBALS_MODULE = 'AnglGlobals';
 exports.ANGL_RUNTIME_IDENTIFIER = '$ART';
 exports.ANGL_RUNTIME_MODULE = 'AnglRuntime';
 exports.ANGL_FILE_MODULE_PREFIX = 'CompiledAngl/';
+exports.SUPER_OBJECT_NAME = 'AnglObject';
 //@ sourceMappingURL=strings.js.map
 
 });
@@ -9957,19 +9958,6 @@ exports.transform = function (ast) {
             });
             return replacement;
         }
-        if(node.type === 'identifier' && !(_.find([
-            node.parentNode
-        ], {
-            type: 'binop',
-            op: '.'
-        }) && node.parentNode.expr2 === node)) {
-            var notLocal = true;
-            var variable = astUtils.getAnglScope(node).getVariableByIdentifierInChain(node.name);
-            if(variable && variable.getAllocationType() === 'LOCAL') {
-                notLocal = false;
-            }
-            node.notLocal = notLocal;
-        }
         if(node.type === 'repeat') {
             var counterVariable = new scopeVariable.Variable();
             counterVariable.setDesiredJsIdentifier('$i');
@@ -10068,6 +10056,9 @@ exports.transform = function (ast) {
             ];
         }
         if(node.type === 'object') {
+            if(!node.parent) {
+                node.parent = strings.SUPER_OBJECT_NAME;
+            }
             node.propertyNames = new buckets.Set();
             node.properties = [];
             node.methodNames = new buckets.Set();
@@ -10102,7 +10093,8 @@ exports.transform = function (ast) {
                         node.createscript = {
                             type: 'script',
                             args: stmt.args,
-                            stmts: stmt.stmts
+                            stmts: stmt.stmts,
+                            methodname: '$create'
                         };
                         break;
                     case 'destroydef':
@@ -10112,7 +10104,8 @@ exports.transform = function (ast) {
                         node.destroyscript = {
                             type: 'script',
                             args: [],
-                            stmts: stmt.stmts
+                            stmts: stmt.stmts,
+                            methodname: '$destroy'
                         };
                         break;
                     case 'property':
@@ -10145,11 +10138,27 @@ exports.transform = function (ast) {
         }
         if(node.type === 'super') {
             var methodNode = astUtils.findParent(node, function (parentNode) {
-                parentNode.type === 'script' && parentNode.methodname;
+                return parentNode.type === 'script' && parentNode.methodname;
             });
+            if(!methodNode) {
+                throw new Error('"super" calls only allowed within object methods.');
+            }
             var objectNode = astUtils.findParent(methodNode, function (parentNode) {
-                parentNode.type === 'object';
+                return parentNode.type === 'object';
             });
+            var methodName = methodNode.methodname;
+            var parentName = objectNode.parent;
+            if(methodName === '$destroy' && node.args.length) {
+                throw new Error('Can\'t pass arguments to "super" call within a "destroy" script.');
+            }
+            return {
+                type: 'funccall',
+                expr: {
+                    type: 'jsexpr',
+                    expr: strings.ANGL_GLOBALS_IDENTIFIER + '.' + parentName + '.prototype.' + methodName
+                },
+                args: node.args
+            };
         }
     });
 };
@@ -10171,16 +10180,7 @@ exports.transform = function (ast) {
             if(node.variable) {
                 return;
             }
-            var scope = astUtils.getAnglScope(node);
-            var variable;
-            while(true) {
-                variable = scope.getVariableByIdentifierInChain(node.name);
-                if(node.notLocal && variable && variable.getAllocationType() === 'LOCAL') {
-                    scope = scope.getParentScope();
-                    continue;
-                }
-                break;
-            }
+            var variable = astUtils.getAnglScope(node).getVariableByIdentifierInChain(node.name);
             if(!variable) {
                 return {
                     type: 'binop',
@@ -10430,6 +10430,10 @@ var generateExpression = function(astNode, omitIndentation) {
             print(')');
             break;
 
+        case 'jsexpr':
+            print(astNode.expr);
+            break;
+
         default:
             throw new Error('Unknown expression type: "' + astNode.type + '"');
     }
@@ -10566,9 +10570,9 @@ var generateStatement = function(astNode, omitTerminator, omitIndentation) {
 
         case 'while':
             omitIndentation || printIndent();
-            print('while((');
+            print('while(');
             generateExpression(astNode.expr);
-            print(') !== 0) {\n');
+            print(') {\n');
             indent();
             generateStatement(astNode.stmt);
             outdent();
@@ -10672,10 +10676,23 @@ var generateStatement = function(astNode, omitTerminator, omitIndentation) {
         case 'object':
             var objectExpr = strings.ANGL_GLOBALS_IDENTIFIER + '.' + astNode.name;
             var protoExpr = objectExpr + '.prototype';
+            var parentObjectExpr = strings.ANGL_GLOBALS_IDENTIFIER + '.' + astNode.parent;
+            var parentProtoExpr = parentObjectExpr + '.prototype';
+            // Wrap object creation within a closure, and pass that closure into the proper runtime method.
+            // The Angl runtime will take care of creating objects in the proper order, so that the parent object
+            // already exists.
+            omitIndentation || printIndent();
+            print(strings.ANGL_RUNTIME_IDENTIFIER + '.createAnglObject(' +
+                  JSON.stringify(astNode.name) + ', ' + JSON.stringify(astNode.parent) + ', ');
+            print('function() {\n');
+            indent();
             // Generate the constructor function
             omitIndentation || printIndent();
-            print(objectExpr + ' = function() {};\n');
-            // TODO create the prototype
+            print(objectExpr + ' = function() { ' + parentObjectExpr + '.apply(this, arguments); };\n');
+            // Create the prototype
+            omitIndentation || printIndent();
+            print(protoExpr + ' = Object.create(' + parentProtoExpr + ');\n');
+            // TODO copy static methods from parent
             // Generate all methods
             _.each(astNode.methods, function(method) {
                 omitIndentation || printIndent();
@@ -10701,7 +10718,11 @@ var generateStatement = function(astNode, omitTerminator, omitIndentation) {
             omitIndentation || printIndent();
             print(protoExpr + '.$initproperties = ');
             generateExpression(astNode.propertyinitscript);
-            //print(';\n');
+            print(';\n');
+            outdent();
+            omitIndentation || printIndent();
+            print('})');
+            break;
             break;
 
         case 'nop':
