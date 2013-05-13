@@ -200,6 +200,10 @@ export var transform = (ast:astTypes.AstNode) => {
         }
 
         if(node.type === 'object') {
+
+            // If no parent is specified, use the default
+            if(!node.parent) node.parent = strings.SUPER_OBJECT_NAME;
+
             // Initialize some basic containers for storing methods, create, destroy, and property assignments
             node.propertyNames = new buckets.Set();
             node.properties = [];
