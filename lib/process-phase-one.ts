@@ -16,7 +16,7 @@ var walk = treeWalker.walk;
 
 export var transform = (ast:astTypes.AstNode) => {
     // TODO fix the typing on node.  I don't know how to access arbitrary properties of an object implementing an interface.
-    walk(ast, (node:any, parent:astTypes.AstNode, locationInParent) => {
+    walk(ast, (node:any, parent:astTypes.AstNode, locationInParent):any => {
 
         var replacement:any[];
 
@@ -245,7 +245,8 @@ export var transform = (ast:astTypes.AstNode) => {
                         node.createscript = {
                             type: 'script',
                             args: stmt.args,
-                            stmts: stmt.stmts
+                            stmts: stmt.stmts,
+                            methodname: '$create'
                         };
                         break;
 
@@ -256,7 +257,8 @@ export var transform = (ast:astTypes.AstNode) => {
                         node.destroyscript = {
                             type: 'script',
                             args: [],
-                            stmts: stmt.stmts
+                            stmts: stmt.stmts,
+                            methodname: '$destroy'
                         };
                         break;
 
@@ -292,6 +294,34 @@ export var transform = (ast:astTypes.AstNode) => {
             // The walker will still traverse all methods, properties, create, and destroy via their new locations
             // on the object node.
             node.stmts = [];
+        }
+
+        if(node.type === 'super') {
+            // Find the containing object (which will tell us the super-class) and the containing method's name
+
+            var methodNode:any = astUtils.findParent(node, (parentNode:any) => parentNode.type === 'script' && parentNode.methodname );
+            if(!methodNode) {
+                throw new Error('"super" calls only allowed within object methods.');
+            }
+            var objectNode:any = astUtils.findParent(methodNode, (parentNode) => parentNode.type === 'object' );
+            var methodName = methodNode.methodname;
+            var parentName = objectNode.parent;
+
+            // Special case for destroy() scripts: Since an object's destroy script can't have arguments, the super()
+            // call can't have arguments either.
+            if(methodName === '$destroy' && node.args.length) {
+                throw new Error('Can\'t pass arguments to "super" call within a "destroy" script.');
+            }
+
+            // replace `super` calls with a funccall node that calls the parent object's method
+            return {
+                type: 'funccall',
+                expr: {
+                    type: 'jsexpr',
+                    expr: strings.ANGL_GLOBALS_IDENTIFIER + '.' + parentName + '.prototype.' + methodName
+                },
+                args: node.args
+            };
         }
 
         // Transform all methods into anonymous script nodes?
